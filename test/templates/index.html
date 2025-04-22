@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wavve 로그인 테스트</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f1f3f5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            padding-top: 2rem;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 800px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 1rem;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 0.6rem;
+            margin-top: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        button {
+            margin-top: 1.5rem;
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            background-color: #3b82f6;
+            color: white;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2563eb;
+        }
+        .result-section {
+            margin-top: 2rem;
+        }
+        .result-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #111;
+        }
+        .result-card {
+            background-color: #000;
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid #444;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 0.95rem;
+            color: #facc15;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Wavve 로그인</h2>
+        <form method="post">
+            <label for="id">ID</label>
+            <input type="text" name="id" required>
+
+            <label for="password">Password</label>
+            <input type="password" name="password" required>
+
+            <button type="submit">로그인 요청</button>
+        </form>
+
+        {% if result1 %}
+        <div class="result-section">
+            <div class="result-title">1. 로그인 응답 결과</div>
+            <div class="result-card">{{ result1 | safe }}</div>
+        </div>
+        {% endif %}
+
+        {% if result2 %}
+        <div class="result-section">
+            <div class="result-title">2. 구매 상품 목록</div>
+            <div class="result-card">{{ result2 | safe }}</div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
