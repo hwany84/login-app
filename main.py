@@ -7,8 +7,20 @@ import json
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
-SIGNIN_URL = "https://account-api.wavve.com/v0.9/signin/wavve"
-PRODUCTS_URL = "https://apis.wavve.com/mypurchase/products"
+URLS = {
+    "prod": {
+        "signin": "https://account-api.wavve.com/v0.9/signin/wavve",
+        "products": "https://apis.wavve.com/mypurchase/products"
+    },
+    "qa": {
+        "signin": "https://qa-account-api.wavve.com/v0.9/signin/wavve",
+        "products": None  # QA는 구매 내역 없음
+    },
+    "dev": {
+        "signin": "https://dev-account-api.wavve.com/v0.9/signin/wavve",
+        "products": None  # Dev도 구매 내역 없음
+    }
+}
 
 COMMON_PARAMS = {
     "apikey": "E5F3E0D30947AA5440556471321BB6D9",
@@ -26,7 +38,12 @@ async def form_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "result1": None, "result2": None})
 
 @app.post("/", response_class=HTMLResponse)
-async def submit_form(request: Request, id: str = Form(...), password: str = Form(...)):
+async def submit_form(
+    request: Request,
+    id: str = Form(...),
+    password: str = Form(...),
+    environment: str = Form(...)
+):
     payload = {
         "type": "general",
         "id": id,
@@ -35,20 +52,21 @@ async def submit_form(request: Request, id: str = Form(...), password: str = For
         "profile": "0"
     }
 
+    signin_url = URLS[environment]["signin"]
+    products_url = URLS[environment]["products"]
+
     async with httpx.AsyncClient() as client:
         # 1. 로그인 요청
-        signin_response = await client.post(SIGNIN_URL, params=COMMON_PARAMS, json=payload)
+        signin_response = await client.post(signin_url, params=COMMON_PARAMS, json=payload)
         signin_result = signin_response.json()
 
-        # credential 추출
         credential = signin_result.get("credential")
 
-        # 기본 JSON 포맷
         formatted_signin_result = json.dumps(signin_result, indent=2, ensure_ascii=False)
-        formatted_products_result = "로그인 실패 또는 credential 없음"
+        formatted_products_result = "구매 내역 조회는 운영환경(Prod)에서만 가능합니다."
 
-        # 2. credential이 있으면 구매 상품 조회
-        if credential:
+        # 2. 운영환경(prod) + credential이 있을 때만 구매 내역 호출
+        if credential and products_url:
             headers = {"wavve-credential": credential}
             params = {
                 **COMMON_PARAMS,
@@ -61,7 +79,7 @@ async def submit_form(request: Request, id: str = Form(...), password: str = For
                 "startdate": ""
             }
 
-            products_response = await client.get(PRODUCTS_URL, params=params, headers=headers)
+            products_response = await client.get(products_url, params=params, headers=headers)
             products_result = products_response.json()
             formatted_products_result = json.dumps(products_result, indent=2, ensure_ascii=False)
 
