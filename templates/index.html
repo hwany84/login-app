@@ -6,20 +6,29 @@
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f1f3f5;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            height: 100vh;
-            padding-top: 2rem;
             margin: 0;
+            padding: 2rem;
         }
         .container {
+            display: flex;
+            flex-direction: row;
+            gap: 2rem;
+        }
+        .form-section {
             background-color: white;
-            padding: 2rem 3rem;
+            padding: 2rem;
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-            width: 90%;
-            max-width: 800px;
+            width: 300px;
+            flex-shrink: 0;
+        }
+        .result-section {
+            flex-grow: 1;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            overflow-x: auto;
         }
         h2 {
             text-align: center;
@@ -30,14 +39,15 @@
             font-weight: bold;
             display: block;
             margin-top: 1rem;
+            font-size: 0.9rem;
         }
-        input[type="text"],
-        input[type="password"] {
+        select, input[type="text"], input[type="password"] {
             width: 100%;
-            padding: 0.6rem;
+            padding: 0.5rem;
             margin-top: 0.5rem;
             border: 1px solid #ccc;
             border-radius: 8px;
+            font-size: 0.9rem;
         }
         button {
             margin-top: 1.5rem;
@@ -53,13 +63,10 @@
         button:hover {
             background-color: #2563eb;
         }
-        .result-section {
-            margin-top: 2rem;
-        }
         .result-title {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: bold;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
             color: #111;
         }
         .result-card {
@@ -69,40 +76,48 @@
             border: 1px solid #444;
             white-space: pre-wrap;
             font-family: monospace;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #facc15;
             word-wrap: break-word;
             overflow-wrap: break-word;
-            text-align: left;
+            height: 400px;
+            overflow-y: auto;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Wavve 로그인</h2>
-        <form method="post">
-            <label for="id">ID</label>
-            <input type="text" name="id" required>
+        <div class="form-section">
+            <h2>Wavve 로그인</h2>
+            <form method="post">
+                <label for="environment">환경 선택</label>
+                <select name="environment" required>
+                    <option value="prod">운영(PRD)</option>
+                    <option value="qa">QA</option>
+                    <option value="dev">DEV</option>
+                </select>
 
-            <label for="password">Password</label>
-            <input type="password" name="password" required>
+                <label for="id">ID</label>
+                <input type="text" name="id" required>
 
-            <button type="submit">로그인 요청</button>
-        </form>
+                <label for="password">Password</label>
+                <input type="password" name="password" required>
 
-        {% if result1 %}
+                <button type="submit">로그인 요청</button>
+            </form>
+        </div>
+
         <div class="result-section">
+            {% if result1 %}
             <div class="result-title">1. 로그인 응답 결과</div>
             <div class="result-card">{{ result1 | safe }}</div>
-        </div>
-        {% endif %}
+            {% endif %}
 
-        {% if result2 %}
-        <div class="result-section">
-            <div class="result-title">2. 구매 상품 목록</div>
+            {% if result2 %}
+            <div class="result-title" style="margin-top:2rem;">2. 구매 상품 목록</div>
             <div class="result-card">{{ result2 | safe }}</div>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
 </body>
 </html>
